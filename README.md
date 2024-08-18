@@ -191,7 +191,7 @@ You can map the result of `doTry` applied to function returning a promise using 
 import doTry from 'do-try';
 
 const [error, users] = await doTry(() => fetchUsers()).then(
-  ([err, users]) => [err && new SomeCustomError(err), users]
+  ([err, users]) => [err && new SomeCustomError(err), users] as const,
 );
 ```
 
