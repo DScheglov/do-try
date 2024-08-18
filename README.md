@@ -1,11 +1,4 @@
-# do-try-tuple
-
-![npm](https://img.shields.io/npm/v/do-try-tuple)
-![npm](https://img.shields.io/npm/dw/do-try-tuple)
-[![Coverage Status](https://coveralls.io/repos/github/DScheglov/do-try-tuple/badge.svg?branch=main)](https://coveralls.io/github/DScheglov/do-try-tuple?branch=main)
-![GitHub](https://img.shields.io/github/license/DScheglov/do-try-tuple)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/DScheglov/do-try-tuple/main.yml)
-
+# do-try-tuple [![Coverage Status](https://coveralls.io/repos/github/DScheglov/do-try-tuple/badge.svg?branch=main)](https://coveralls.io/github/DScheglov/do-try-tuple?branch=main) [![npm version](https://img.shields.io/npm/v/do-try-tuple.svg?style=flat-square)](https://www.npmjs.com/package/do-try-tuple) [![npm downloads](https://img.shields.io/npm/dm/do-try-tuple.svg?style=flat-square)](https://www.npmjs.com/package/do-try-tuple) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DScheglov/do-try-tuple/blob/master/LICENSE)
 
 Catches errors and rejected promises, returns tuple with error and value.
 
