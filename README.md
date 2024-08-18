@@ -1,4 +1,4 @@
-# do-try
+# do-try-tuple
 
 Catches errors and rejected promises, returns tuple with error and value.
 
@@ -18,13 +18,13 @@ Catches errors and rejected promises, returns tuple with error and value.
 ## Installation
 
 ```bash
-npm install do-try
+npm install do-try-tuple
 ```
 
 ## Usage
 
 ```typescript
-import doTry from 'do-try';
+import doTry from 'do-try-tuple';
 
 function div(a: number, b: number): number {
   if (b !== 0) return a / b;
@@ -43,7 +43,7 @@ if (errX == null) {
 ## Async Usage
 
 ```typescript
-import doTry from 'do-try';
+import doTry from 'do-try-tuple';
 
 const [error, users] = await doTry(() => fetchUsers());
 
@@ -188,7 +188,7 @@ if (error) {
 You can map the result of `doTry` applied to function returning a promise using `then` method:
 
 ```typescript
-import doTry from 'do-try';
+import doTry from 'do-try-tuple';
 
 const [error, users] = await doTry(() => fetchUsers()).then(
   ([err, users]) => [err && new SomeCustomError(err), users] as const,
