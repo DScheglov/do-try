@@ -198,7 +198,7 @@ const [error, users] = await doTry(() => fetchUsers()).then(
 However, consider that functions returning promises can throw error synchronously:
 
 ```typescript
-const fetchUsers = () => {
+const fetchUsers = (): Promise<string[]> => {
   if (Math.random() < 0.5) throw new Error('Failed to fetch users');
   return Promise.resolve(['Alice', 'Bob', 'Charlie']);
 };
@@ -229,8 +229,8 @@ const [err, value] = await doTry(async () => someFn(...))
 instead of
 
 ```typescript
-// WRONG
-const [err, value] = await doTry(() => someFn(...))
+// WRONG                         ___________
+const [err, value] = await doTry(/* async */() => someFn(...))
   .then(([err, value]) => {
     // handle err and value
   });
