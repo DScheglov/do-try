@@ -25,5 +25,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.17.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DScheglov/do-try-tuple.git"
+  },
+  "homepage": "https://github.com/DScheglov/do-try-tuple"
 }
