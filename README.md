@@ -106,7 +106,7 @@ compiler option in TypeScript:
 
 ### `success` and `failure` constructor functions
 
-These functions allows to create `ErrValueTuple` instances:
+These functions allow to create `ErrValueTuple` instances:
 
 ```typescript
 export function success<T>(value: T): Readonly<[undefined, T]>;
@@ -151,11 +151,11 @@ export class DoTryError extends Error {
 
 is an union of string literal error codes that `DoTryError` class uses.
 
-| Constant                     | Description                                          | Cause        |
-| ---------------------------- | ---------------------------------------------------- | ------------ |
-| `ERR_NOT_A_FUNCTION`         | `fn` argument is not a function                      | `fn`         |
-| `ERR_NULLISH_VALUE_REJECTED` | promise is rejected with `null` or `undefined` value | caught value |
-| `ERR_NULLISH_VALUE_THROWN`   | `fn` throws `null` or `undefined` value              | caught value |
+| Code / Instance Of                                                               | Description                                                           | Cause        |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------ |
+| code: `'ERR_NOT_A_FUNCTION'`<br />class: `DoTryError.NotAFunction`                 | `fn` argument is not a function                                       | `fn`         |
+| code: `'ERR_NULLISH_VALUE_REJECTED'`<br />class: `DoTryError.NullishValueRejected` | promise returned by `fn` is rejected with `null` or `undefined` value | caught value |
+| code: `'ERR_NULLISH_VALUE_THROWN'`<br />class: `DoTryError.NullishValueThrown`     | `fn` throws `null` or `undefined` value                               | caught value |
 
 ## Important! Discriminating `ErrValueTuple`
 

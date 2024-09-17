@@ -9,11 +9,11 @@
   - `UnknownError` type
   - `DoTryError` class
   
-## 1.1.0
+## 1.1.x
 
 - Added
   - `success` and `failure` constructor functions
   - `DoTryError` subclasses:
-    - `NotAFunction`
-    - `NullishValueRejected`
-    - `NullishValueThrown`
+    - `DoTryError.NotAFunction`
+    - `DoTryError.NullishValueRejected`
+    - `DoTryError.NullishValueThrown`
