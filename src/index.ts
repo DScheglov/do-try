@@ -22,15 +22,9 @@ export type ErrValueTuple<T> =
   | Readonly<[UnknownError, undefined]>
   | Readonly<[undefined, T]>;
 
-const success = <T>(value: T): Readonly<[undefined, T]> => [undefined, value];
+export const success = <T>(value: T) => [undefined, value] as const;
 
-const failure = (
-  err: unknown,
-  code: DoTryErrorCode,
-): Readonly<[UnknownError, undefined]> => [
-  err ?? new DoTryError(code, err),
-  undefined,
-];
+export const failure = (err: UnknownError) => [err, undefined] as const;
 
 const doTry: {
   (fn: () => never): Readonly<[UnknownError, never]>;
@@ -39,7 +33,7 @@ const doTry: {
   <T>(fn: () => T): ErrValueTuple<T>;
 } = <T>(fn: () => T | Promise<T>): any => {
   if (typeof fn !== 'function')
-    return failure(new DoTryError(ERR_NOT_A_FUNCTION, fn), ERR_NOT_A_FUNCTION);
+    return failure(new DoTryError.NotAFunction(fn));
 
   try {
     const result = fn();
@@ -47,10 +41,10 @@ const doTry: {
 
     return result.then(
       success, //
-      (error: unknown) => failure(error, ERR_NULLISH_VALUE_REJECTED),
+      (error: unknown) => failure(error ?? new DoTryError.NullishValueRejected(error)),
     );
   } catch (error) {
-    return failure(error, ERR_NULLISH_VALUE_THROWN);
+    return failure(error ?? new DoTryError.NullishValueThrown(error));
   }
 };
 

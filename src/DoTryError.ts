@@ -19,6 +19,24 @@ function doTryErrorMessage(code: DoTryErrorCode): string {
 }
 
 export default class DoTryError extends Error {
+  static NotAFunction = class NotAFunction extends DoTryError {
+    constructor(cause: null | undefined) {
+      super(ERR_NOT_A_FUNCTION, cause);
+    }
+  }
+
+  static NullishValueRejected = class NullishValueRejected extends DoTryError {
+    constructor(cause: null | undefined) {
+      super(ERR_NULLISH_VALUE_REJECTED, cause);
+    }
+  }
+
+  static NullishValueThrown = class NullishValueThrown extends DoTryError {
+    constructor(cause: null | undefined) {
+      super(ERR_NULLISH_VALUE_THROWN, cause);
+    }
+  }
+
   constructor(
     public code: DoTryErrorCode,
     public cause: unknown,
