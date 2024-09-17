@@ -32,8 +32,7 @@ const doTry: {
   <T>(fn: () => Promise<T>): Promise<ErrValueTuple<T>>;
   <T>(fn: () => T): ErrValueTuple<T>;
 } = <T>(fn: () => T | Promise<T>): any => {
-  if (typeof fn !== 'function')
-    return failure(new DoTryError.NotAFunction(fn));
+  if (typeof fn !== 'function') return failure(new DoTryError.NotAFunction(fn));
 
   try {
     const result = fn();
@@ -41,7 +40,8 @@ const doTry: {
 
     return result.then(
       success, //
-      (error: unknown) => failure(error ?? new DoTryError.NullishValueRejected(error)),
+      (error: unknown) =>
+        failure(error ?? new DoTryError.NullishValueRejected(error)),
     );
   } catch (error) {
     return failure(error ?? new DoTryError.NullishValueThrown(error));
