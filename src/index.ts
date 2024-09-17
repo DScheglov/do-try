@@ -22,8 +22,10 @@ export type ErrValueTuple<T> =
   | Readonly<[UnknownError, undefined]>
   | Readonly<[undefined, T]>;
 
+/** @since 1.1.0 */
 export const success = <T>(value: T) => [undefined, value] as const;
 
+/** @since 1.1.0 */
 export const failure = (err: UnknownError) => [err, undefined] as const;
 
 const doTry: {

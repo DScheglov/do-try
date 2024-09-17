@@ -61,6 +61,7 @@ The library exports:
 - `doTry` function (default export)
 - `ErrValueTuple` type
 - `UnknownError` type
+- `success` and `failure` constructor functions
 - `DoTryError` class
 - `DoTryErrorCode` type and constants
 
@@ -102,6 +103,27 @@ The library respects the same motivation as caused introduction
 compiler option in TypeScript:
 
 - we cannot be sure that all thrown errors are instances of `Error` class
+
+### `success` and `failure` constructor functions
+
+These functions allows to create `ErrValueTuple` instances:
+
+```typescript
+export function success<T>(value: T): Readonly<[undefined, T]>;
+export function failure(error: UnknownError): Readonly<[UnknownError, undefined]>;
+```
+
+It could be useful in tests:
+
+```typescript
+import { success, failure } from 'do-try-tuple';
+
+test('div', () => {
+  expect(doTry(() => div(4, 2))).toEqual(success(2));
+  expect(doTry(() => div(4, 0))).toEqual(failure(new Error('Division by Zero')));
+  expect(doTry(() => div(0, 0))).toEqual(failure(new Error('Indeterminate Form')));
+});
+```
 
 ### `DoTryError` class
 
