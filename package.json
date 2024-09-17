@@ -1,6 +1,6 @@
 {
   "name": "do-try-tuple",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Catches errors and rejected promises, returns tuple",
   "main": "dist/index.js",
   "scripts": {
