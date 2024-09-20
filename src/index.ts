@@ -3,7 +3,7 @@ import DoTryError, {
   ERR_NOT_A_FUNCTION,
   ERR_NULLISH_VALUE_REJECTED,
   ERR_NULLISH_VALUE_THROWN,
-} from './DoTryError';
+} from './DoTryError.js';
 
 export {
   DoTryError,
@@ -28,7 +28,7 @@ export const success = <T>(value: T) => [undefined, value] as const;
 /** @since 1.1.0 */
 export const failure = (err: UnknownError) => [err, undefined] as const;
 
-const doTry: {
+export const doTry: {
   (fn: () => never): Readonly<[UnknownError, never]>;
   (fn: () => Promise<never>): Promise<Readonly<[UnknownError, never]>>;
   <T>(fn: () => Promise<T>): Promise<ErrValueTuple<T>>;
