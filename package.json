@@ -2,11 +2,38 @@
   "name": "do-try-tuple",
   "version": "1.1.1",
   "description": "Catches errors and rejected promises, returns tuple",
-  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    },
+    "./global": {
+      "types": "./dist/cjs/global.d.ts",
+      "require": "./dist/cjs/global.js",
+      "import": "./dist/cjs/global.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "global": [
+        "./dist/cjs/global.d.ts"
+      ],
+      "*": [
+        "./dist/esm/*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
-    "compile": "rm -rf ./dist; tsc"
+    "compile:cjs": "tsc --project tsconfig.cjs.json",
+    "compile:esm": "tsc --project tsconfig.esm.json && echo '{ \"type\": \"module\" }' > dist/esm/package.json",
+    "compile:min": "tsup && cp dist/cjs/global.d.ts dist/build/global.min.d.ts",
+    "compile": "rm -rf ./dist && npm run compile:cjs && npm run compile:esm && npm run compile:min"
   },
   "keywords": [
     "try",
@@ -30,7 +57,7 @@
     "globals": "^15.8.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.3",
-    "ts-node": "^10.9.2",
+    "tsup": "^8.3.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^7.17.0"
   },
