@@ -59,9 +59,10 @@ if (error != null) {
 The library exports:
 
 - `doTry` function (default export)
-- `ErrValueTuple` type
+- `safe` promise wrapper to make it resolving to `ErrValueTuple`
+- `Failure`, `Success` and `ErrValueTuple` types
 - `UnknownError` type
-- `success` and `failure` constructor functions
+- `success` and `failure` factory functions
 - `DoTryError` class
 - `DoTryErrorCode` type and constants
 
@@ -76,15 +77,44 @@ function doTry<T>(fn: () => T): ErrValueTuple<T>;
 function doTry<T>(fn: () => Promise<T>): Promise<ErrValueTuple<T>>;
 ```
 
-### `ErrValueTuple` type
+### `safe` promise wrapper
 
-is a union of two tuples: one representing the error case and the other
-representing the success case.
+is a function that wraps a promise and makes it resolving to `ErrValueTuple`:
 
 ```typescript
-export type ErrValueTuple<T> =
-  | [UnknownError, undefined] // error case
-  | [undefined, T]; // success case
+function safe<T>(promise: Promise<T>): Promise<ErrValueTuple<T>>;
+```
+
+It could be useful when you need to handle the promise rejection synchronously:
+
+```typescript
+import { safe } from 'do-try-tuple';
+
+const [error, users] = await safe(fetchUsers());
+```
+
+### `Failure` type
+
+is a tuple representing the error case:
+
+```typescript
+export type Failure = readonly [UnknownError, undefined];
+```
+
+### `Success` type
+
+is a tuple representing the success case:
+
+```typescript
+export type Success<T> = readonly [undefined, T];
+```
+
+### `ErrValueTuple` type
+
+is a union of `Failure` and `Success<T>`.
+
+```typescript
+export type ErrValueTuple<T> = Failure | Success<T>;
 ```
 
 ### `UnknownError` type
@@ -104,14 +134,17 @@ compiler option in TypeScript:
 
 - we cannot be sure that all thrown errors are instances of `Error` class
 
-### `success` and `failure` constructor functions
+### `success` and `failure` factory functions
 
 These functions allow to create `ErrValueTuple` instances:
 
 ```typescript
-export function success<T>(value: T): Readonly<[undefined, T]>;
-export function failure(error: UnknownError): Readonly<[UnknownError, undefined]>;
+export function success<T>(value: T): Success<T>;
+export function failure(error: unknown): Failure;
 ```
+
+The `failure` functions checks if `error` is not null or undefined, otherwise it throws
+creates a `DoTryError` instance with `ERR_NULLISH_VALUE_CAUGHT` code and `error` as a cause.
 
 It could be useful in tests:
 
@@ -130,8 +163,7 @@ test('div', () => {
 is an error class that is returned when `doTry` cannot comply to the `ErrValueTuple` contract:
 
 - when the `fn` argument is not a function
-- when the thrown and caught error is `null` or `undefined`
-- when the promise is rejected with `null` or `undefined` value
+- when the caught error is `null` or `undefined`
 
 ```typescript
 export class DoTryError extends Error {
@@ -151,11 +183,10 @@ export class DoTryError extends Error {
 
 is an union of string literal error codes that `DoTryError` class uses.
 
-| Code / Instance Of                                                               | Description                                                           | Cause        |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------ |
-| code: `'ERR_NOT_A_FUNCTION'`<br />class: `DoTryError.NotAFunction`                 | `fn` argument is not a function                                       | `fn`         |
-| code: `'ERR_NULLISH_VALUE_REJECTED'`<br />class: `DoTryError.NullishValueRejected` | promise returned by `fn` is rejected with `null` or `undefined` value | caught value |
-| code: `'ERR_NULLISH_VALUE_THROWN'`<br />class: `DoTryError.NullishValueThrown`     | `fn` throws `null` or `undefined` value                               | caught value |
+| Code / Instance Of                                                             | Description                                                           | Cause        |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------ |
+| code: `'ERR_NOT_A_FUNCTION'`<br />class: `DoTryError.NotAFunction`             | `fn` argument is not a function                                       | `fn`         |
+| code: `'ERR_NULLISH_VALUE_CAUGHT'`<br />class: `DoTryError.NullishValueCaught` | `doTry` caught `null` or `undefined` value                            | caught value |
 
 ## Important! Discriminating `ErrValueTuple`
 

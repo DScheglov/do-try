@@ -1,20 +1,16 @@
 export const ERR_NOT_A_FUNCTION = 'ERR_NOT_A_FUNCTION';
-export const ERR_NULLISH_VALUE_REJECTED = 'ERR_NULLISH_VALUE_REJECTED';
-export const ERR_NULLISH_VALUE_THROWN = 'ERR_NULLISH_VALUE_THROWN';
+export const ERR_NULLISH_VALUE_CAUGHT = 'ERR_NULLISH_VALUE_CAUGHT';
 
 export type DoTryErrorCode =
   | typeof ERR_NOT_A_FUNCTION
-  | typeof ERR_NULLISH_VALUE_REJECTED
-  | typeof ERR_NULLISH_VALUE_THROWN;
+  | typeof ERR_NULLISH_VALUE_CAUGHT;
 
 function doTryErrorMessage(code: DoTryErrorCode): string {
   switch (code) {
     case ERR_NOT_A_FUNCTION:
       return 'The "fn" argument is not a function';
-    case ERR_NULLISH_VALUE_REJECTED:
-      return 'Promise has been rejected with nullish value';
-    case ERR_NULLISH_VALUE_THROWN:
-      return 'Nullish value has been thrown';
+    case ERR_NULLISH_VALUE_CAUGHT:
+      return 'The nullish value has been caught';
   }
 }
 
@@ -25,15 +21,9 @@ export default class DoTryError extends Error {
     }
   };
 
-  static NullishValueRejected = class NullishValueRejected extends DoTryError {
+  static NullishValueCaught = class NullishValueCaught extends DoTryError {
     constructor(cause: null | undefined) {
-      super(ERR_NULLISH_VALUE_REJECTED, cause);
-    }
-  };
-
-  static NullishValueThrown = class NullishValueThrown extends DoTryError {
-    constructor(cause: null | undefined) {
-      super(ERR_NULLISH_VALUE_THROWN, cause);
+      super(ERR_NULLISH_VALUE_CAUGHT, cause);
     }
   };
 

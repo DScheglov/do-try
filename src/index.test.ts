@@ -1,11 +1,11 @@
 import { describe, expect, it } from '@jest/globals';
 import { Expect, Equal } from '@type-challenges/utils';
 import doTry, {
+  safe,
   ErrValueTuple,
   UnknownError,
   ERR_NOT_A_FUNCTION,
-  ERR_NULLISH_VALUE_REJECTED,
-  ERR_NULLISH_VALUE_THROWN,
+  ERR_NULLISH_VALUE_CAUGHT,
 } from './index';
 import DoTryError from './DoTryError';
 
@@ -31,6 +31,17 @@ describe('doTry', () => {
     expect(check).toBeTruthy();
   });
 
+  it('correctly types the [error, value] of synchronous functions that never returns', () => {
+    const [error, value] = doTry(() => {
+      throw new Error('Something went wrong');
+    });
+    const checkErr: Expect<Equal<typeof error, UnknownError>> = true;
+    const checkValue: Expect<Equal<typeof value, never>> = true;
+
+    expect(checkErr).toBeTruthy();
+    expect(checkValue).toBeTruthy();
+  });
+
   it('correctly types the result of asynchronous functions that never returns', () => {
     const result = doTry(async () => {
       throw new Error('Something went wrong');
@@ -39,6 +50,20 @@ describe('doTry', () => {
       Equal<typeof result, Promise<Readonly<[UnknownError, never]>>>
     > = true;
     expect(check).toBeTruthy();
+  });
+
+  it('correctly types the [error, value] of asynchronous functions that never returns', async () => {
+    expect.assertions(2);
+
+    const [error, value] = await doTry(async () => {
+      throw new Error('Something went wrong');
+    });
+
+    const checkErr: Expect<Equal<typeof error, UnknownError>> = true;
+    const checkValue: Expect<Equal<typeof value, never>> = true;
+
+    expect(checkErr).toBeTruthy();
+    expect(checkValue).toBeTruthy();
   });
 
   it('correctly discriminates the result of synchronous functions (ok case)', () => {
@@ -161,7 +186,7 @@ describe('doTry', () => {
       throw null;
     };
     const [error]: ErrValueTuple<unknown> = doTry(fn);
-    expect(error).toEqual(new DoTryError(ERR_NULLISH_VALUE_THROWN, null));
+    expect(error).toEqual(new DoTryError(ERR_NULLISH_VALUE_CAUGHT, null));
   });
 
   it('returns a DoTryError if undefined has been thrown', () => {
@@ -169,7 +194,7 @@ describe('doTry', () => {
       throw undefined;
     };
     const [error]: ErrValueTuple<unknown> = doTry(fn);
-    expect(error).toEqual(new DoTryError(ERR_NULLISH_VALUE_THROWN, undefined));
+    expect(error).toEqual(new DoTryError(ERR_NULLISH_VALUE_CAUGHT, undefined));
   });
 
   it('returns a DoTryError if promise has been rejected with null', () => {
@@ -180,8 +205,7 @@ describe('doTry', () => {
     };
     const result = doTry(fn);
     return expect(result).resolves.toEqual([
-      new DoTryError(ERR_NULLISH_VALUE_REJECTED, null),
-      undefined,
+      new DoTryError(ERR_NULLISH_VALUE_CAUGHT, null),
     ]);
   });
 
@@ -193,8 +217,7 @@ describe('doTry', () => {
     };
     const result = doTry(fn);
     return expect(result).resolves.toEqual([
-      new DoTryError(ERR_NULLISH_VALUE_REJECTED, undefined),
-      undefined,
+      new DoTryError(ERR_NULLISH_VALUE_CAUGHT, undefined),
     ]);
   });
 
@@ -251,5 +274,57 @@ describe('doTry', () => {
     );
 
     expect(error).toEqual(new TypeError('Something went wrong'));
+  });
+});
+
+describe('safe', () => {
+  it('makes promise to resolve with ErrValueTuple when it resolves', async () => {
+    const result = await safe(Promise.resolve(42));
+
+    expect(result).toEqual([undefined, 42]);
+  });
+
+  it('returns a correctly typed promise, when it resolves', async () => {
+    expect.assertions(1);
+    const promise = safe(Promise.resolve(42));
+
+    const check: Expect<Equal<typeof promise, Promise<ErrValueTuple<number>>>> =
+      true;
+    expect(check).toBeTruthy();
+
+    await promise;
+  });
+
+  it('makes promise to resolve with ErrValueTuple when it rejects', async () => {
+    const result = await safe(
+      Promise.reject(new Error('Something went wrong')),
+    );
+
+    expect(result).toEqual([new Error('Something went wrong'), undefined]);
+  });
+
+  it('returns a correctly typed promise, when it only rejects', async () => {
+    expect.assertions(1);
+    const promise = safe(Promise.reject(new Error('Something went wrong')));
+
+    const check: Expect<
+      Equal<typeof promise, Promise<readonly [UnknownError, never]>>
+    > = true;
+    expect(check).toBeTruthy();
+
+    await promise;
+  });
+
+  it('returns a correctly typed promise, when it only rejects', async () => {
+    expect.assertions(1);
+    const promise = safe(
+      Promise.reject<number>(new Error('Something went wrong')),
+    );
+
+    const check: Expect<Equal<typeof promise, Promise<ErrValueTuple<number>>>> =
+      true;
+    expect(check).toBeTruthy();
+
+    await promise;
   });
 });
